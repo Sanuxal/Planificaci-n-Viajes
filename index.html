@@ -59,7 +59,7 @@
             const horaInicio = parseInt(document.getElementById('horaInicio').value);
 
             // Crear listas de conductores y autocares
-            const conductores = Array.from({ length: numConductores }, (_, i) => ({ id: i, horasConducidas: 0, descansos: 0 }));
+            const conductores = Array.from({ length: numConductores }, (_, i) => ({ id: i, horasConducidas: 0, descansos: 0, viajes: [] }));
             const autocares = Array.from({ length: numAutocares }, (_, i) => ({ id: i, viajes: [] }));
             const viajes = Array.from({ length: numViajes }, (_, i) => ({
                 id: i,
@@ -75,10 +75,12 @@
                 if (conductor.horasConducidas + viaje.duracion <= 9) {
                     conductor.horasConducidas += viaje.duracion;
                     autocar.viajes.push({ ...viaje, horaInicio: horaActual });
+                    conductor.viajes.push({ ...viaje, horaInicio: horaActual });
                 } else {
                     conductor.descansos += 1;
                     conductor.horasConducidas = viaje.duracion;
                     autocar.viajes.push({ ...viaje, horaInicio: horaActual });
+                    conductor.viajes.push({ ...viaje, horaInicio: horaActual });
                 }
 
                 horaActual += viaje.duracion;
@@ -95,7 +97,11 @@
                 }
             }
             for (const conductor of conductores) {
-                resultados += `Conductor ${conductor.id}: Horas conducidas: ${conductor.horasConducidas}, Descansos: ${conductor.descansos}\n`;
+                resultados += `Conductor ${conductor.id}:\n`;
+                for (const viaje of conductor.viajes) {
+                    resultados += `  Viaje ${viaje.id} - Duración: ${viaje.duracion} horas - Inicio: ${viaje.horaInicio}:00\n`;
+                }
+                resultados += `  Horas conducidas: ${conductor.horasConducidas}, Descansos: ${conductor.descansos}\n`;
             }
 
             document.getElementById('resultados').textContent = resultados;
